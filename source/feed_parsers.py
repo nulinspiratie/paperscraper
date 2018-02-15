@@ -1,6 +1,6 @@
 import feedparser
 import re
-from paper_tools import Author, Paper
+from .paper_tools import Author, Paper
 
 
 def parse_arXiv_feed(url):

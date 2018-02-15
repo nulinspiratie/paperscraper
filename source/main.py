@@ -1,13 +1,13 @@
 import datetime
+from source import db
+from .database_tools import get_entries
+from .HTML_tools import create_email_HTML
+from .feed_parsers import parse_arXiv_feed
+from .paper_tools import filter_papers, sort_papers
+from .email_tools import send_email
 
-from database_tools import get_entries
-from HTML_tools import create_email_HTML
-from feed_parsers import parse_arXiv_feed
-from paper_tools import filter_papers, sort_papers
-from email_tools import send_email
 
-
-filter_keywords = get_entries()
+filter_keywords = get_entries(db)
 
 papers = parse_arXiv_feed(r'http://export.arxiv.org/rss/quant-ph')
 print('Total papers from arXiv:', len(papers))

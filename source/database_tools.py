@@ -1,13 +1,6 @@
-import MySQLdb
-host = "nulinspiratie.mysql.pythonanywhere-services.com"
-username = "nulinspiratie"
-password = "mypassword"
-database = "nulinspiratie$comments"
 
 
-def get_entries():
-    db = MySQLdb.connect(host, username, password, database)
-
+def get_entries(db):
     # prepare a cursor object using cursor() method
     cursor = db.cursor()
 
@@ -20,5 +13,4 @@ def get_entries():
           results[entry_type] = [result[1] for result in cursor.fetchall()]
         except Exception as e:
           print("Error: unable to fetch data", e)
-    db.close()
     return results

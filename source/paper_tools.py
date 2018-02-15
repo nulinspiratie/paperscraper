@@ -1,7 +1,7 @@
 import feedparser
 import re
 import time
-from HTML_tools import title_to_HTML, authors_to_HTML, abstract_to_HTML
+from .HTML_tools import title_to_HTML, authors_to_HTML, abstract_to_HTML
 
 class Author:
     def __init__(self, author_string):

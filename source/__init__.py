@@ -1,6 +1,7 @@
-from database_tools import *
-from email_tools import *
-from feed_parser import *
-from HTML_tools import *
-from paper_tools import *
-from main import *
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+application = Flask(__name__, template_folder='../templates')
+application.config.from_object('config')
+
+db = SQLAlchemy(application)

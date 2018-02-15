@@ -1,22 +1,8 @@
 
 # A very simple Flask Hello World app for you to get started with...
-from flask import Flask, redirect, render_template, request, url_for
-from flask_sqlalchemy import SQLAlchemy
-from .source import *
+from flask import redirect, render_template, request, url_for
 
-app = Flask(__name__)
-app.config["DEBUG"] = False
-
-SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
-    username="nulinspiratie",
-    password="paperscraperpassword",
-    hostname="paperscraperdb.cbyxywvwfrgo.us-east-2.rds.amazonaws.com",
-    databasename="nulinspiratie$comments",
-)
-app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
-app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-db = SQLAlchemy(app)
+from source import application, db
 
 
 class Author(db.Model):
@@ -37,15 +23,15 @@ class AbstractKeyword(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(4096))
 
+db.create_all()
 
-@app.route("/", methods=["GET", "POST"])
+@application.route("/", methods=["GET", "POST"])
 def index():
     if request.method == 'GET':
-        return render_template("main_page.html",
+        return render_template("main.html",
                                authors=Author.query.all(),
                                title_keywords=TitleKeyword.query.all(),
                                abstract_keywords=AbstractKeyword.query.all())
-
     else: # 'POST'
         name = request.form["contents"]
 
@@ -78,3 +64,7 @@ def index():
                     db.session.delete(existing_abstract_keyword)
         db.session.commit()
         return redirect(url_for('index'))
+
+
+if __name__ == '__main__':
+    application.run(host='0.0.0.0')
