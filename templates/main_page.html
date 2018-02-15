@@ -1,0 +1,97 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+
+        <title>My scratchboard page</title>
+
+        <style>
+            .filter_column {
+                width: 28%;
+                float: left;
+          		margin: 20px
+            }
+            .filter_row:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+          .add-button {
+          	width: 45%;
+          }
+          .remove-button {
+          	width: 45%;
+          }
+          .form-control {
+          	width: 90%
+          }
+          .row-entry {
+              margin: 2pt;
+          }
+
+        </style>
+    </head>
+
+    <body>
+      <div class="flex-container", style="margin: 20px">
+        <div class="row filter_row">
+            <div class="column filter_column">
+                <H2>Authors</H2>
+                {% for author in authors %}
+                <div class="row row-entry">
+                    {{ author.name }}
+                </div>
+                {% endfor %}
+
+                <div class="row" align='center'>
+                    <form action="." method="POST">
+                        <textarea class="form-control" name="contents" placeholder="Enter an author" rows="1"></textarea>
+                        <input type="submit" class="btn btn-success add-button" name="author_button" value="Add">
+                        <input type="submit" class="btn remove-button" name="author_button" value="Remove">
+                    </form>
+                </div>
+            </div>
+
+            <div class="column filter_column">
+                <H2>Title keywords</H2>
+                {% for title_keyword in title_keywords %}
+                <div class="row row-entry">
+                    {{ title_keyword.name }}
+                </div>
+                {% endfor %}
+
+                <div class="row" align='center'>
+                    <form action="." method="POST">
+                        <textarea class="form-control" name="contents" placeholder="Enter a title keyword" rows="1"></textarea>
+                      	<div class="flex">
+                          <input type="submit" class="btn btn-success add-button" name="title_keyword_button" value="Add">
+                          <input type="submit" class="btn remove-button" name="title_keyword_button" value="Remove">
+                      	</div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="column filter_column">
+                <H2>Abstract keywords</H2>
+                {% for abstract_keyword in abstract_keywords %}
+                <div class="row row-entry">
+                    {{ abstract_keyword.name }}
+                </div>
+                {% endfor %}
+
+                <div class="row" align='center'>
+                    <form action="." method="POST">
+                        <textarea class="form-control " name="contents" placeholder="Enter an abstract keyword" rows="1"></textarea>
+                        <input type="submit" class="btn btn-success add-button" name="abstract_keyword_button" value="Add">
+                        <input type="submit" class="btn remove-button" name="abstract_keyword_button" value="Remove">
+                    </form>
+                </div>
+            </div>
+        </div>
+      </div>
+
+    </body>
+</html>
