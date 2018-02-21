@@ -2,7 +2,7 @@
 # A very simple Flask Hello World app for you to get started with...
 from flask import redirect, render_template, request, url_for
 
-from source import application, db
+from send_email import application, db
 
 
 class Author(db.Model):
@@ -11,17 +11,19 @@ class Author(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(4096))
 
-class TitleKeyword(db.Model):
-    __tablename__ = "title_keywords"
+class Keyword(db.Model):
+    __tablename__ = "keywords"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(4096))
 
-class AbstractKeyword(db.Model):
-    __tablename__ = "abstract_keywords"
+class Journal(db.Model):
+    __tablename__ = "journals"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(4096))
+    enabled = db.Column(db.Boolean())
+    order = db.Column(db.Integer())
 
 db.create_all()
 
@@ -30,8 +32,7 @@ def index():
     if request.method == 'GET':
         return render_template("main.html",
                                authors=Author.query.all(),
-                               title_keywords=TitleKeyword.query.all(),
-                               abstract_keywords=AbstractKeyword.query.all())
+                               keywords=Keyword.query.all())
     else: # 'POST'
         name = request.form["contents"]
 
@@ -44,24 +45,19 @@ def index():
             elif request.form['author_button'] == 'Remove' and existing_authors:
                 for existing_author in existing_authors:
                     db.session.delete(existing_author)
-        elif 'title_keyword_button' in request.form:
-            existing_title_keywords = TitleKeyword.query.filter_by(name=name).all()
-            if request.form['title_keyword_button'] == 'Add' and not existing_title_keywords:
-                # Add new title keyword
-                title_keyword = TitleKeyword(name=name)
-                db.session.add(title_keyword)
-            elif request.form['title_keyword_button'] == 'Remove' and existing_title_keywords:
-                for existing_title_keyword in existing_title_keywords:
-                    db.session.delete(existing_title_keyword)
-        elif 'abstract_keyword_button' in request.form:
-            existing_abstract_keywords = AbstractKeyword.query.filter_by(name=name).all()
-            if request.form['abstract_keyword_button'] == 'Add' and not existing_abstract_keywords:
-                # Add new abstract keyword
-                abstract_keyword = AbstractKeyword(name=name)
-                db.session.add(abstract_keyword)
-            elif request.form['abstract_keyword_button'] == 'Remove' and existing_abstract_keywords:
-                for existing_abstract_keyword in existing_abstract_keywords:
-                    db.session.delete(existing_abstract_keyword)
+        elif 'keyword_button' in request.form:
+            existing_keywords = Keyword.query.filter_by(name=name).all()
+            if request.form['keyword_button'] == 'Add' and not existing_keywords:
+                # Add new keyword
+                keyword = Keyword(name=name)
+                db.session.add(keyword)
+                print('Adding keyword', name)
+            elif request.form['keyword_button'] == 'Remove' and existing_keywords:
+                for existing_keyword in existing_keywords:
+                    db.session.delete(existing_keyword)
+                print('Removing keyword', name)
+        elif 'save_button' in request.form:
+            pass
         db.session.commit()
         return redirect(url_for('index'))
 
