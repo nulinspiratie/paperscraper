@@ -32,6 +32,7 @@ class Journal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(4096))
     enabled = db.Column(db.Boolean)
+    summary = db.Column(db.Boolean)
     order = db.Column(db.Integer)
 
 db.create_all()
@@ -87,6 +88,7 @@ def index():
                     logger.info('Updating existing journals')
                     for journal in total_journals:
                         journal.enabled = f'{journal.name}-enabled' in request.form
+                        journal.summary = f'{journal.name}-summary' in request.form
                         journal.order = int(request.form[f'{journal.name}-order'])
                         logger.info(f'Updated {journal.name}\t'
                                     f'enabled: {journal.enabled}\t'
@@ -97,7 +99,8 @@ def index():
                 if request.form['journal_button'] == 'Add':
                     if not existing_journals:
                         logger.info(f'Adding journal: {name}')
-                        journal = Journal(name=name, enabled=True, order=len(total_journals)+1)
+                        journal = Journal(name=name, enabled=True, summary=True,
+                                          order=len(total_journals)+1)
                         db.session.add(journal)
                 elif request.form['journal_button'] == 'Remove':
                     for existing_journal in existing_journals:

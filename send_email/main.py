@@ -1,3 +1,4 @@
+import sys
 import datetime
 from send_email import db
 from send_email.database_tools import get_entries
@@ -18,6 +19,8 @@ if __name__ == '__main__':
                                          **filter_keywords)
 
     date_string = datetime.datetime.now().strftime("%d %B %Y")
-    send_email(email_address='serwan.asaad@gmail.com',
-              subject=f'{len(sorted_filtered_papers)} new papers {date_string}',
-              html=create_email_HTML(sorted_filtered_papers))
+
+    if len(sys.argv) > 1:
+        send_email(email_address='serwan.asaad@gmail.com',
+                  subject=f'{len(sorted_filtered_papers)} new papers {date_string}',
+                  html=create_email_HTML(sorted_filtered_papers))

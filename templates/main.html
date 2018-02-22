@@ -113,6 +113,7 @@
                     <tr>
                         <th>Journal</th>
                         <th>Enabled</th>
+                        <th>Summary</th>
                         <th>Order</th>
                     </tr>
 
@@ -124,6 +125,15 @@
                                        id="checkBox"
                                        type="checkbox"
                                        {%  if journal.enabled %}
+                                       checked
+                                       {% endif %}
+                                       >
+                            </td>
+                            <td>
+                                <input name="{{ journal.name }}-summary"
+                                       id="checkBox"
+                                       type="checkbox"
+                                       {%  if journal.summary %}
                                        checked
                                        {% endif %}
                                        >
