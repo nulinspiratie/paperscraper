@@ -1,26 +1,48 @@
 import sys
 import datetime
+from collections import OrderedDict
+import pyperclip
+
 from send_email import db
-from send_email.database_tools import get_entries
+from send_email.database_tools import retrieve_data
 from send_email.HTML_tools import create_email_HTML
-from send_email.feed_parsers import parse_arXiv_feed
+from send_email.feed_parsers import feed_parsers
 from send_email.paper_tools import filter_papers, sort_papers
 from send_email.email_tools import send_email
 
 if __name__ == '__main__':
-    filter_keywords = get_entries(db)
+    data = retrieve_data(db)
+    print(data)
 
-    papers = parse_arXiv_feed(r'http://export.arxiv.org/rss/quant-ph')
-    print('Total papers from arXiv:', len(papers))
-    filtered_papers = filter_papers(papers, **filter_keywords)
-    print('Total filtered_papers:', len(filtered_papers))
-    sorted_filtered_papers = sort_papers(filtered_papers,
-                                         sort_order=['authors', 'title_keywords', 'abstract_keywords'],
-                                         **filter_keywords)
+    # Sort journals
+    data['journals'] = sorted(data['journals'], key=lambda journal: journal['order'])
 
-    date_string = datetime.datetime.now().strftime("%d %B %Y")
+    # Collect papers
+    papers = OrderedDict()
+    for journal in data['journals']:
+        if journal['name'] in feed_parsers:
+            papers[journal['name']] = feed_parsers[journal['name']]()
 
+    email_HTML = create_email_HTML(papers)
     if len(sys.argv) > 1:
         send_email(email_address='serwan.asaad@gmail.com',
                   subject=f'{len(sorted_filtered_papers)} new papers {date_string}',
-                  html=create_email_HTML(sorted_filtered_papers))
+                  html=email_HTML)
+    else:
+        pyperclip.copy(email_HTML)
+
+
+    # papers = parse_arXiv_feed(r'http://export.arxiv.org/rss/quant-ph')
+    # print('Total papers from arXiv:', len(papers))
+    # filtered_papers = filter_papers(papers, **filter_keywords)
+    # print('Total filtered_papers:', len(filtered_papers))
+    # sorted_filtered_papers = sort_papers(filtered_papers,
+    #                                      sort_order=['authors', 'title_keywords', 'abstract_keywords'],
+    #                                      **filter_keywords)
+    #
+    # date_string = datetime.datetime.now().strftime("%d %B %Y")
+    #
+    # if len(sys.argv) > 1:
+    #     send_email(email_address='serwan.asaad@gmail.com',
+    #               subject=f'{len(sorted_filtered_papers)} new papers {date_string}',
+    #               html=create_email_HTML(sorted_filtered_papers))

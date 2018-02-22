@@ -1,6 +1,8 @@
+from functools import partial
 import feedparser
 import re
 from .paper_tools import Author, Paper
+
 
 
 def parse_arXiv_feed(url):
@@ -19,3 +21,7 @@ def parse_arXiv_feed(url):
                       pdf_link=entry['link'].replace('/abs/', '/pdf/'))
         papers.append(paper)
     return papers
+
+
+feed_parsers = {'arXiv quant-ph': partial(parse_arXiv_feed,
+                                          r'http://export.arxiv.org/rss/quant-ph')}
