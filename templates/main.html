@@ -36,11 +36,11 @@
         }
         table#journal-table {
             width: 100%;
-            padding: 10px
+            padding: 10px,
+            text-align: center;
         }
         table#journal-table td {
             padding: 5px;
-          text-align: center;
         }
 
     </style>
@@ -92,9 +92,20 @@
         <div class="column filter_column">
             <H2>Journals</H2>
             <form action="." method="POST">
+                <span style="display: flex">
+                    <textarea class="form-control" name="contents"
+                              placeholder="Enter new journal name"
+                              rows="1" style="width: 50%"></textarea>
+                    <input type="submit" class="btn btn-success add-button"
+                           name="journal_button" value="Add"
+                           style="width: 20%">
+                    <input type="submit" class="btn remove-button"
+                           name="journal_button" value="Remove"
+                           style="width: 20%">
+                </span>
                 <div style="margin: auto">
                     <input type="submit" class="btn btn-success save-button"
-                           name="save_button" value="Save">
+                           name="journal_button" value="Save">
                 </div>
 
                 <br>
@@ -104,18 +115,27 @@
                         <th>Enabled</th>
                         <th>Order</th>
                     </tr>
-                    <tr>
-                        <td>arXiv</td>
-                        <td><input id="checkBox" type="checkbox"></td>
-                        <td><input id="number" type="number" min="1"
-                                   max="10"></td>
-                    </tr>
-                    <tr>
-                        <td>Nature</td>
-                        <td><input id="checkBox" type="checkbox"></td>
-                        <td><input id="number" type="number" min="1"
-                                   max="10"></td>
-                    </tr>
+
+                    {% for journal in journals %}
+                        <tr>
+                            <td> {{ journal.name }}</td>
+                            <td>
+                                <input name="{{ journal.name }}-enabled"
+                                       id="checkBox"
+                                       type="checkbox"
+                                       {%  if journal.enabled %}
+                                       checked
+                                       {% endif %}
+                                       >
+                            </td>
+                            <td>
+                                <input id="number" type="number" min="1"
+                                       name="{{ journal.name }}-order"
+                                       max="10"
+                                       value="{{ journal.order }}">
+                            </td>
+                        </tr>
+                    {% endfor %}
                 </table>
             </form>
         </div>
