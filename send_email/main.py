@@ -6,24 +6,21 @@ import pyperclip
 from send_email import db
 from send_email.database_tools import retrieve_data
 from send_email.HTML_tools import create_email_HTML
-from send_email.feed_parsers import feed_parsers
-from send_email.paper_tools import filter_papers, sort_papers
+from send_email.paper_tools import Journal
 from send_email.email_tools import send_email
 
 if __name__ == '__main__':
     data = retrieve_data(db)
-    print(data)
 
-    # Sort journals
-    data['journals'] = sorted(data['journals'], key=lambda journal: journal['order'])
+    journals = [Journal(**journal) for journal in data['journals']
+                if journal['enabled']]
 
-    # Collect papers
-    papers = OrderedDict()
-    for journal in data['journals']:
-        if journal['name'] in feed_parsers:
-            papers[journal['name']] = feed_parsers[journal['name']]()
+    for journal in journals:
+        journal.get_new_papers(authors=data['authors'],
+                               keywords=data['keywords'])
 
-    email_HTML = create_email_HTML(papers)
+    email_HTML = create_email_HTML(journals=journals)
+
     if len(sys.argv) > 1:
         send_email(email_address='serwan.asaad@gmail.com',
                   subject=f'{len(sorted_filtered_papers)} new papers {date_string}',

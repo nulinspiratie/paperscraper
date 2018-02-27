@@ -18,4 +18,10 @@ def retrieve_data(db):
                               for result in data]
         except Exception as e:
             print("Error: unable to fetch data", e)
+
+    # Drop all columns of authors and keywords except `name`
+    results['authors'] = [author['name'] for author in results['authors']]
+    results['keywords'] = [keyword['name'] for keyword in results['keywords']]
+    # Sort journals
+    results['journals'].sort(key=lambda journal: journal['order'])
     return results
