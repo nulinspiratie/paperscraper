@@ -6,6 +6,9 @@ from . import RSS_feed_parsers, RSS_urls
 
 class Author:
     def __init__(self, author_string):
+        author_string = author_string.replace('   ', ' ')
+        author_string = author_string.replace('  ', ' ')
+        author_string = author_string.replace('. ', '.').replace('.', '. ')
         names = author_string.split(' ')
         assert len(names) > 1
 
@@ -65,13 +68,15 @@ class Author:
 
 
 class Paper:
-    def __init__(self, authors, title, abstract, link, journal, pdf_link=None):
+    def __init__(self, authors, title, abstract, link, journal, date,
+                 pdf_link=None):
         self.authors = authors
         self.title = title
         self.abstract = abstract.replace('\n', ' ')
         self.link = link
         self.pdf_link = pdf_link
         self.journal = journal
+        self.date = date
 
         self.result = None
 
@@ -108,25 +113,35 @@ class Paper:
     def HTML_highlight(self, id=None):
         HTML_title = title_to_HTML(self.title,
                                    bold_keywords=self.result.get('title_keywords', []),
-                                   link=self.link,
-                                   pdf_link=self.pdf_link)
+                                   link=None if id is None else f'#abstract-{id}')
         HTML_authors = authors_to_HTML(self.authors,
                                        bold_authors=self.result.get('authors', []),
                                        max_authors=3)
 
-        HTML_abstract = 'abstract'
-        if 'abstract_keywords' in self.result:
-            HTML_abstract += '(' + ', '.join(self.result['abstract_keywords']) + ')'
-        if id is not None:
-            HTML_abstract = f'<a href="#abstract-{id}" style="text-decoration: none">' \
-                            f'<span>{HTML_abstract}</span></a>'
+        HTML_journal = f'<a href="{self.link}" style="text-decoration: none">' \
+                            f'<span>{self.journal}</span></a>'
 
-        HTML = f'{HTML_title}{HTML_authors} | {self.journal} | {HTML_abstract}'
+        HTML = f'{HTML_title}{HTML_authors} | {HTML_journal}'
+
+        if self.pdf_link is not None:
+            HTML += f' | <a href="{self.pdf_link}" style="text-decoration: none">PDF</a>'
+
+        if 'abstract_keywords' in self.result:
+            HTML += ' | Abstract keywords: ' + ', '.join(self.result['abstract_keywords'])
+
         HTML = f'<div>{HTML}</div>'
         return HTML
 
     def HTML_summary(self):
-        return self.title
+        HTML_title = title_to_HTML(self.title,
+                                   bold_keywords=self.result.get('title_keywords', []),
+                                   heading=None,
+                                   link=self.link)
+        HTML_authors = authors_to_HTML(self.authors,
+                                       bold_authors=self.result.get('authors', []),
+                                       max_authors=3)
+        HTML = f'{HTML_title} - {HTML_authors}'
+        return HTML
 
     def HTML_abstract(self, id=None):
         HTML_title = title_to_HTML(self.title,
@@ -151,12 +166,13 @@ class Paper:
 
 
 class Journal():
-    def __init__(self, name, enabled, summary, **kwargs):
+    def __init__(self, name, enabled, summary, date=None, **kwargs):
         assert name in RSS_urls, f"No RSS feed setup for {name}"
 
         self.name = name
         self.enabled = enabled
         self.summary = summary
+        self.date = date
 
         self.RSS_url = RSS_urls[self.name]
         self.feed_parser = RSS_feed_parsers[self.name]
@@ -177,14 +193,15 @@ class Journal():
         return self.sorted_papers
 
     def parse_feed(self):
-        self.papers = self.feed_parser(self.RSS_url)
+        self.papers = self.feed_parser(self.RSS_url, journal=self.name)
         return self.papers
 
     def filter_papers(self, papers, authors=[], keywords=[]):
         self.filtered_papers = []
         for paper in papers:
             result = paper.matches(authors=authors,
-                                   keywords=keywords,
+                                   title_keywords=keywords,
+                                   abstract_keywords=keywords,
                                    update=True)
             if result:
                 self.filtered_papers.append(paper)

@@ -4,9 +4,8 @@ from .paper_tools import Paper, Author
 from . import RSS_feed_parsers
 
 
-def parse_arXiv_feed(url):
+def parse_arXiv_feed(url, journal):
     rss_dict = feedparser.parse(url)
-    print(rss_dict)
     papers = []
     for entry in rss_dict['entries']:
         author_strings = re.findall('>([A-Z][^<]+)<\/a>', entry['author'])
@@ -16,8 +15,40 @@ def parse_arXiv_feed(url):
                       title=title,
                       abstract=entry['summary'].strip('<p>').strip('</p'),
                       link=entry['link'],
-                      journal='arXiv',
-                      pdf_link=entry['link'].replace('/abs/', '/pdf/'))
+                      journal=journal,
+                      pdf_link=entry['link'].replace('/abs/', '/pdf/'),
+                      date=rss_dict['updated_parsed'])
         papers.append(paper)
     return papers
 RSS_feed_parsers['arXiv quant-ph'] = parse_arXiv_feed
+
+
+
+def parse_nature_feed(url, journal):
+    rss_dict = feedparser.parse(url)
+    papers = []
+    for entry in rss_dict['entries']:
+        if 'authors' in entry:
+            authors = [Author(author['name']) for author in entry['authors']]
+        else:
+            authors = []
+
+        if 'updated_parsed' in rss_dict:
+            date = rss_dict['updated_parsed']
+        else:
+            date = rss_dict['entries'][0]['updated_parsed']
+        paper = Paper(authors=authors,
+                      title=entry['title'],
+                      abstract=entry['summary'].split('</a></p>')[1],
+                      link=entry['link'],
+                      journal=journal,
+                      pdf_link=entry['link'] + '.pdf',
+                      date=date)
+        papers.append(paper)
+    return papers
+RSS_feed_parsers['Nature'] = parse_nature_feed
+RSS_feed_parsers['Nature Chemistry'] = parse_nature_feed
+RSS_feed_parsers['Nature Electronics'] = parse_nature_feed
+RSS_feed_parsers['Nature Materials'] = parse_nature_feed
+RSS_feed_parsers['Nature Nanotechnology'] = parse_nature_feed
+RSS_feed_parsers['Nature Physics'] = parse_nature_feed

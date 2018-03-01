@@ -1,19 +1,22 @@
 import re
 
 
-def title_to_HTML(title, bold_keywords=[], link=None, id=None, pdf_link=None):
+H1_style = '"margin-bottom: -.5em"'
+
+def title_to_HTML(title, bold_keywords=[], heading=3, link=None, id=None, pdf_link=None):
     title = title.lower().capitalize()
     for bold_keyword in bold_keywords:
         title = re.sub(bold_keyword, f'<b>{bold_keyword}</b>', title, flags=re.IGNORECASE)
 
-    title_style = "font-weight:normal;margin:0;font-size:17px;max-width:44.5em;line-height:20px"
+    title_style = "font-weight:normal;margin:0;margin-top:.5em;font-size:17px;max-width:62.5em;line-height:20px"
 
     HTML = title
     if link:
         HTML = f'<a href="{link}" style="text-decoration: none">{HTML}</a>'
     if pdf_link is not None:
         HTML = f'<a href="{pdf_link}" style="text-decoration: none">[PDF]</a> ' + HTML
-    HTML = f'<h3 style="{title_style}">{HTML}</h3>'
+    if heading is not None:
+        HTML = f'<h{heading} style="{title_style}">{HTML}</h{heading}>'
     if id is not None:
         HTML = f'<a name="abstract-{id}"></a>' + HTML
     return HTML
@@ -42,12 +45,12 @@ def authors_to_HTML(authors, bold_authors=[], max_authors=None):
 
 def create_HTML_paper_highlights(papers):
     HTML_papers = [paper.HTML_highlight(id=id) for id, paper in enumerate(papers)]
-    HTML = '<br>'.join(HTML_papers)
+    HTML = ''.join(HTML_papers)
     return HTML
 
 
 def create_HTML_journal_summary(journal):
-    HTML = f'<H2>{journal.name}</H2>'
+    HTML = f'<H2 style="margin-bottom: 0">{journal.name}</H2>'
     HTML += '<br>'.join([paper.HTML_summary() for paper in journal.papers])
     return HTML
 
@@ -59,17 +62,17 @@ def create_HTML_paper_abstracts(papers):
 
 
 def create_email_HTML(journals):
-    HTML = '<a name="Top"></a><H2 id="top">Highlighted papers</H2>'
+    HTML = '<a name="Top"></a><H1 style="margin-bottom: 0em" id="top">Highlighted papers</H1>'
     highlighted_papers = [paper for journal in journals
                           for paper in journal.sorted_papers]
     HTML += create_HTML_paper_highlights(highlighted_papers)
 
     if any(journal.summary for journal in journals):
-        HTML += '<H2>Paper summaries</H2>'
+        HTML += '<H1 style="margin-bottom: -.5em">Paper summaries</H1>'
         for journal in journals:
             if journal.summary:
                 HTML += create_HTML_journal_summary(journal)
 
-    HTML += '<H2>Paper abstracts</H2>'
+    HTML += '<H1 style="margin-bottom: 0em">Paper abstracts</H1>'
     HTML += create_HTML_paper_abstracts(highlighted_papers)
     return HTML

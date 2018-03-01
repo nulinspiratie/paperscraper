@@ -1,6 +1,7 @@
 
 # A very simple Flask Hello World app for you to get started with...
 from flask import redirect, render_template, request, url_for
+from send_email import RSS_urls
 import logging
 
 from send_email import application, db
@@ -98,10 +99,11 @@ def index():
                 existing_journals = Journal.query.filter_by(name=name).all()
                 if request.form['journal_button'] == 'Add':
                     if not existing_journals:
-                        logger.info(f'Adding journal: {name}')
-                        journal = Journal(name=name, enabled=True, summary=True,
-                                          order=len(total_journals)+1)
-                        db.session.add(journal)
+                        if name in RSS_urls:
+                            logger.info(f'Adding journal: {name}')
+                            journal = Journal(name=name, enabled=True, summary=True,
+                                              order=len(total_journals)+1)
+                            db.session.add(journal)
                 elif request.form['journal_button'] == 'Remove':
                     for existing_journal in existing_journals:
                         logger.info(f'Removing existing journal: {existing_journal}')
