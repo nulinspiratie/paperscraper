@@ -1,6 +1,6 @@
+import traceback
 import sys
 import datetime
-from collections import OrderedDict
 import pyperclip
 
 from send_email import db
@@ -10,21 +10,29 @@ from send_email.paper_tools import Journal
 from send_email.email_tools import send_email
 
 if __name__ == '__main__':
-    data = retrieve_data(db)
+    try:
+        data = retrieve_data(db)
 
-    journals = [Journal(**journal) for journal in data['journals']
-                if journal['enabled']]
+        journals = [Journal(**journal) for journal in data['journals']
+                    if journal['enabled']]
 
-    for journal in journals:
-        journal.get_new_papers(authors=data['authors'],
-                               keywords=data['keywords'])
+        for journal in journals:
+            journal.get_new_papers(authors=data['authors'],
+                                   keywords=data['keywords'])
 
-    total_papers = sum(len(journal.sorted_papers) for journal in journals)
+        total_papers = sum(len(journal.new_papers) for journal in journals)
 
-    email_HTML = create_email_HTML(journals=journals)
+        email_HTML = create_email_HTML(journals=journals)
+
+        for journal in journals:
+            journal.update_database()
+        db.session.commit()
+    except:
+        db.session.rollback()
+        email_HTML = traceback.format_exc()
 
 
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 1 and email_HTML:
         date_string = datetime.datetime.now().strftime("%d %B %Y")
         send_email(email_address='serwan.asaad@gmail.com',
                   subject=f'{total_papers} new papers {date_string}',

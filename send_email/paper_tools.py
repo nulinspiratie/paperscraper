@@ -1,14 +1,20 @@
 import re
 import time
+from datetime import datetime
 from .HTML_tools import title_to_HTML, authors_to_HTML
 from . import RSS_feed_parsers, RSS_urls
 
-
 class Author:
     def __init__(self, author_string):
+        original_author_string = author_string
         author_string = author_string.replace('   ', ' ')
         author_string = author_string.replace('  ', ' ')
         author_string = author_string.replace('. ', '.').replace('.', '. ')
+        author_string = author_string.rstrip(' ')
+        if ', ' in author_string:
+            # Starts with last name
+            author_string = ' '.join(author_string.split(', ')[::-1])
+
         names = author_string.split(' ')
         assert len(names) > 1
 
@@ -53,7 +59,9 @@ class Author:
         if not isinstance(other, Author):
             return False
 
-        if other.first_initial != self.first_initial or other.last_name != self.last_name:
+        if other.first_initial.lower() != self.first_initial.lower():
+            return False
+        elif other.last_name.lower() != self.last_name.lower():
             return False
 
         if other.middle_initials and self.middle_initials:
@@ -61,7 +69,7 @@ class Author:
                 return False
             else:
                 for other_initial, self_initial in zip(other.middle_initials, self.middle_initials):
-                    if other_initial != self_initial:
+                    if other_initial.lower() != self_initial.lower():
                         return False
 
         return True
@@ -76,9 +84,11 @@ class Paper:
         self.link = link
         self.pdf_link = pdf_link
         self.journal = journal
+        if isinstance(date, time.struct_time):
+            date = datetime.fromtimestamp(time.mktime(date))
         self.date = date
 
-        self.result = None
+        self.result = {}
 
     @property
     def author_list(self):
@@ -166,30 +176,44 @@ class Paper:
 
 
 class Journal():
-    def __init__(self, name, enabled, summary, date=None, **kwargs):
+    def __init__(self, name, enabled, summary, last_update=None, **kwargs):
         assert name in RSS_urls, f"No RSS feed setup for {name}"
 
         self.name = name
         self.enabled = enabled
         self.summary = summary
-        self.date = date
+
+        if isinstance(last_update, str):
+            last_update = datetime.strptime(last_update, '%Y-%m-%d %H:%M:%S')
+        self.last_update = last_update
 
         self.RSS_url = RSS_urls[self.name]
         self.feed_parser = RSS_feed_parsers[self.name]
 
+        self.papers = []
+        self.new_papers = []
         self.filtered_papers = []
         self.sorted_papers = []
 
     def get_new_papers(self, authors, keywords,
-                       sort_order=('authors', 'title_keywords', 'abstract_keywords')):
+                       sort_order=('authors', 'title_keywords', 'abstract_keywords'),
+                       filter_last_update=True):
         self.papers = self.parse_feed()
-        self.filtered_papers = self.filter_papers(papers=self.papers,
+
+        if filter_last_update and self.last_update is not None:
+            self.new_papers = [paper for paper in self.papers
+                               if paper.date > self.last_update]
+        else:
+            self.new_papers = self.papers
+
+        self.filtered_papers = self.filter_papers(papers=self.new_papers,
                                                   authors=authors,
                                                   keywords=keywords)
         self.sorted_papers = self.sort_papers(papers=self.filtered_papers,
                                               sort_order=sort_order,
                                               authors=authors,
                                               keywords=keywords)
+
         return self.sorted_papers
 
     def parse_feed(self):
@@ -239,3 +263,10 @@ class Journal():
                                               keywords=keywords)
 
         return sorted_papers
+
+    def update_database(self):
+        if self.new_papers:
+            from . import JournalDB
+            journal_db = JournalDB.query.filter_by(name=self.name).first()
+            latest_paper_date = max(paper.date for paper in self.new_papers)
+            journal_db.last_update = latest_paper_date.strftime('%Y-%m-%d %H:%M:%S')

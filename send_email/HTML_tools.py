@@ -62,17 +62,21 @@ def create_HTML_paper_abstracts(papers):
 
 
 def create_email_HTML(journals):
-    HTML = '<a name="Top"></a><H1 style="margin-bottom: 0em" id="top">Highlighted papers</H1>'
-    highlighted_papers = [paper for journal in journals
-                          for paper in journal.sorted_papers]
-    HTML += create_HTML_paper_highlights(highlighted_papers)
+    HTML = ''
+    if any(journal.sorted_papers for journal in journals):
+        HTML += '<a name="Top"></a>'
+        HTML += '<H1 style="margin-bottom: 0em" id="top">Highlighted papers</H1>'
+        highlighted_papers = [paper for journal in journals
+                              for paper in journal.sorted_papers]
+        HTML += create_HTML_paper_highlights(highlighted_papers)
 
-    if any(journal.summary for journal in journals):
+    if any(journal.summary and journal.new_papers for journal in journals):
         HTML += '<H1 style="margin-bottom: -.5em">Paper summaries</H1>'
         for journal in journals:
-            if journal.summary:
+            if journal.summary and journal.new_papers:
                 HTML += create_HTML_journal_summary(journal)
 
-    HTML += '<H1 style="margin-bottom: 0em">Paper abstracts</H1>'
-    HTML += create_HTML_paper_abstracts(highlighted_papers)
+    if any(journal.sorted_papers for journal in journals):
+        HTML += '<H1 style="margin-bottom: 0em">Paper abstracts</H1>'
+        HTML += create_HTML_paper_abstracts(highlighted_papers)
     return HTML

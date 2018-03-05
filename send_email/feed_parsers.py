@@ -52,3 +52,24 @@ RSS_feed_parsers['Nature Electronics'] = parse_nature_feed
 RSS_feed_parsers['Nature Materials'] = parse_nature_feed
 RSS_feed_parsers['Nature Nanotechnology'] = parse_nature_feed
 RSS_feed_parsers['Nature Physics'] = parse_nature_feed
+
+
+def parse_science_feed(url, journal):
+    rss_dict = feedparser.parse(url)
+    papers = []
+    for entry in rss_dict['entries']:
+        first_names = entry['author'].split(', ')[1::2]
+        last_names = entry['author'].split(', ')[::2]
+        authors = [f'{first_name} {last_name}'
+                   for first_name, last_name in zip(first_names, last_names)]
+        date = rss_dict['updated_parsed']
+        paper = Paper(authors=authors,
+                      title=entry['title'],
+                      abstract=entry['summary'].lstrip('<p>').rstrip('</p>'),
+                      link=entry['link'],
+                      journal=journal,
+                      date=date)
+        papers.append(paper)
+    return papers
+RSS_feed_parsers['Science'] = parse_science_feed
+RSS_feed_parsers['Science Advances'] = parse_science_feed

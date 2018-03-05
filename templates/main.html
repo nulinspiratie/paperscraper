@@ -49,7 +49,7 @@
 <body>
 <div class="flex-container" style="margin: 20px">
     <div class="row filter_row">
-        <div class="column filter_column">
+        <div class="column filter_column" style="width: 15%">
             <H2>Authors</H2>
 
             <div class="row" align='center'>
@@ -67,7 +67,7 @@
             {% endfor %}
         </div>
 
-        <div class="column filter_column">
+        <div class="column filter_column" style="width: 15%">
             <H2>Keywords</H2>
 
             <div class="row" align='center'>
@@ -89,7 +89,7 @@
                 </div>
             {% endfor %}
         </div>
-        <div class="column filter_column">
+        <div class="column filter_column" style="width: 40%">
             <H2>Journals</H2>
             <form action="." method="POST">
                 <span style="display: flex">
@@ -115,6 +115,7 @@
                         <th>Enabled</th>
                         <th>Summary</th>
                         <th>Order</th>
+                        <th>Last update</th>
                     </tr>
 
                     {% for journal in journals %}
@@ -142,7 +143,11 @@
                                 <input id="number" type="number" min="1"
                                        name="{{ journal.name }}-order"
                                        max="10"
+                                       style="width:40px"
                                        value="{{ journal.order }}">
+                            </td>
+                            <td>
+                                {{ journal.last_update }}
                             </td>
                         </tr>
                     {% endfor %}
