@@ -77,14 +77,14 @@ def index():
             else:
                 name = request.form["contents"]
                 try:
-                    name = next(journal for journal in RSS_urls
-                                if name == journal.lower())
-                    existing_journals = JournalDB.query.filter_by(name=name).all()
+                    journal = next(journal for journal in RSS_urls
+                                   if name.lower() == journal.lower())
+                    existing_journals = JournalDB.query.filter_by(name=journal).all()
                     if request.form['journal_button'] == 'Add':
                         if not existing_journals:
                             logger.info(f'Adding journal: {name}')
                             date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                            journal = JournalDB(name=name, enabled=True, summary=True,
+                            journal = JournalDB(name=journal, enabled=True, summary=True,
                                               order=len(total_journals)+1,
                                               last_update=date)
                             db.session.add(journal)
@@ -93,7 +93,7 @@ def index():
                             logger.info(f'Removing existing journal: {existing_journal}')
                             db.session.delete(existing_journal)
                 except StopIteration:
-                    pass
+                    logger.warning(f'Could not find journal {name} in {RSS_urls}')
 
         db.session.commit()
         return redirect(url_for('index'))

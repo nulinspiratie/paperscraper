@@ -33,10 +33,7 @@ def parse_nature_feed(url, journal):
         else:
             authors = []
 
-        if 'updated_parsed' in rss_dict:
-            date = rss_dict['updated_parsed']
-        else:
-            date = rss_dict['entries'][0]['updated_parsed']
+        date = entry['updated_parsed']
         paper = Paper(authors=authors,
                       title=entry['title'],
                       abstract=entry['summary'].split('</a></p>')[1],
@@ -62,7 +59,7 @@ def parse_science_feed(url, journal):
         last_names = entry['author'].split(', ')[::2]
         authors = [f'{first_name} {last_name}'
                    for first_name, last_name in zip(first_names, last_names)]
-        date = rss_dict['updated_parsed']
+        date = entry['updated_parsed']
         paper = Paper(authors=authors,
                       title=entry['title'],
                       abstract=entry['summary'].lstrip('<p>').rstrip('</p>'),

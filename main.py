@@ -28,6 +28,8 @@ if __name__ == '__main__':
             journal.update_database()
         db.session.commit()
     except:
+        print(traceback.format_exc())
+
         db.session.rollback()
         email_HTML = traceback.format_exc()
 

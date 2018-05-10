@@ -95,7 +95,10 @@ class Paper:
         return ', '.join(str(author) for author in self.authors)
 
     def __repr__(self):
-        return f'{self.authors[0]} et al. - {self.title}'
+        if self.authors:
+            return f'{self.authors[0]} et al. - {self.title}'
+        else:
+            return f'No authors - {self.title}'
 
     def matches(self, authors=None, title_keywords=None,
                 abstract_keywords=None,
@@ -269,4 +272,5 @@ class Journal():
             from . import JournalDB
             journal_db = JournalDB.query.filter_by(name=self.name).first()
             latest_paper_date = max(paper.date for paper in self.new_papers)
+            print(f'{self.name}: {latest_paper_date}')
             journal_db.last_update = latest_paper_date.strftime('%Y-%m-%d %H:%M:%S')
