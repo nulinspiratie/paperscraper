@@ -1,8 +1,8 @@
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
-    username="sql12237312",
-    password="a2X3MT7c3a",
-    hostname="sql12.freemysqlhosting.net",
-    databasename="sql12237312",
+    username="root",
+    password="m00hugergy",
+    hostname="localhost",
+    databasename="paperscraper",
 )
 
 SQLALCHEMY_POOL_RECYCLE = 299
