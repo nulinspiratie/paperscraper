@@ -2,12 +2,17 @@ import traceback
 import sys
 import datetime
 import pyperclip
+import logging
 
 from send_email import db
 from send_email.database_tools import retrieve_data
 from send_email.HTML_tools import create_email_HTML
 from send_email.paper_tools import Journal
 from send_email.email_tools import send_email
+
+
+logger = logging.getLogger(__name__)
+
 
 if __name__ == '__main__':
     try:
@@ -40,4 +45,8 @@ if __name__ == '__main__':
                   subject=f'{total_papers} new papers {date_string}',
                   html=email_HTML)
     else:
-        pyperclip.copy(email_HTML)
+        try:
+            pyperclip.copy(email_HTML)
+        except:
+            logger.error('Could not copy text')
+            print(email_HTML)
