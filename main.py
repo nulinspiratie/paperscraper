@@ -3,18 +3,34 @@ import sys
 import datetime
 import pyperclip
 import logging
+import argparse
 
 from send_email import db
 from send_email.database_tools import retrieve_data
 from send_email.HTML_tools import create_email_HTML
 from send_email.paper_tools import Journal
 from send_email.email_tools import send_email
+# from send_email.database_tools import initialize_user
 
 
 logger = logging.getLogger(__name__)
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Scrape journal papers.')
+    parser.add_argument('--create-user', type=str,
+                        help='Create a user in the database')
+    parser.add_argument('--email', type=str, help='Use custom e-mail address')
+    # parsed_args = parser.parse_args(sys.argv)
+
+    parsed_args = parser.parse_args(['--create-user', 'name'])
+
+    if parsed_args.create_user:
+        db.create_all()
+    else:
+        print('Exiting')
+        quit()
+
     try:
         data = retrieve_data(db)
 
