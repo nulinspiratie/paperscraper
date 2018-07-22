@@ -21,14 +21,10 @@ if __name__ == '__main__':
     parser.add_argument('--create-user', type=str,
                         help='Create a user in the database')
     parser.add_argument('--email', type=str, help='Use custom e-mail address')
-    # parsed_args = parser.parse_args(sys.argv)
-
-    parsed_args = parser.parse_args(['--create-user', 'name'])
+    parsed_args = parser.parse_args()
 
     if parsed_args.create_user:
         db.create_all()
-    else:
-        print('Exiting')
         quit()
 
     try:
@@ -55,9 +51,9 @@ if __name__ == '__main__':
         email_HTML = traceback.format_exc()
 
 
-    if len(sys.argv) > 1 and email_HTML:
+    if parsed_args.email:
         date_string = datetime.datetime.now().strftime("%d %B %Y")
-        send_email(email_address='serwan.asaad@gmail.com',
+        send_email(email_address=parsed_args.email,
                   subject=f'{total_papers} new papers {date_string}',
                   html=email_HTML)
     else:
