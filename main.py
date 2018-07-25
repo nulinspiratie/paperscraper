@@ -13,6 +13,7 @@ from send_email.email_tools import send_email
 # from send_email.database_tools import initialize_user
 
 
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -21,6 +22,8 @@ if __name__ == '__main__':
     parser.add_argument('--create-user', type=str,
                         help='Create a user in the database')
     parser.add_argument('--email', type=str, help='Use custom e-mail address')
+    parser.add_argument('--update', help='Update journal last updated',
+                        action='store_const', const=True)
     parsed_args = parser.parse_args()
 
     if parsed_args.create_user:
@@ -40,10 +43,11 @@ if __name__ == '__main__':
         total_papers = sum(len(journal.new_papers) for journal in journals)
 
         email_HTML = create_email_HTML(journals=journals)
-
-        for journal in journals:
-            journal.update_database()
-        db.session.commit()
+        
+        if parsed_args.update:
+            for journal in journals:
+                journal.update_database()
+            db.session.commit()
     except:
         print(traceback.format_exc())
 

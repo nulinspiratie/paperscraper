@@ -1,5 +1,5 @@
-
 # A very simple Flask Hello World app for you to get started with...
+import argparse
 from flask import redirect, render_template, request, url_for
 from send_email import RSS_urls
 import logging
@@ -100,4 +100,12 @@ def index():
 
 
 if __name__ == '__main__':
-    application.run(host='0.0.0.0')
+    parser = argparse.ArgumentParser(description='Run paperscraper website')
+    parser.add_argument('--ip', type=str)
+    parser.add_argument('--port', type=str)
+    parser.add_argument('--public', action='store_const', const=True)
+    parsed_args = parser.parse_args()
+    if parsed_args.public:
+        parsed_args.ip = '155.143.13.171'
+
+    application.run(host=parsed_args.ip, port=parsed_args.port)
