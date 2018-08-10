@@ -4,6 +4,7 @@ import datetime
 import pyperclip
 import logging
 import argparse
+import io
 
 from send_email import db
 from send_email.database_tools import retrieve_data
