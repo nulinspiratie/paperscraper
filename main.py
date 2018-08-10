@@ -70,6 +70,7 @@ if __name__ == '__main__':
         logger.error(traceback.format_exc())
         email_HTML = log_capture_string.getvalue()
 
+    print('\n'*10 + log_capture_string.getvalue())
     if parsed_args.email:
         date_string = datetime.datetime.now().strftime("%d %B %Y")
         send_email(email_address=parsed_args.email,
