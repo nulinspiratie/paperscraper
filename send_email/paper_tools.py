@@ -16,20 +16,26 @@ class Author:
             author_string = ' '.join(author_string.split(', ')[::-1])
 
         names = author_string.split(' ')
-        assert len(names) > 1, f"Could not extract names from {original_author_string}"
+        assert names, f"Could not extract names from {original_author_string}"
 
-        if '.' not in names[0]:
-            self.first_name = names[0]
+        if len(names) == 1:
+            self.first_initial = ''
+            self.first_name = ''
+            self.middle_initials = []
+            self.last_name = names[0]
         else:
-            self.first_name = None
+            if '.' not in names[0]:
+                self.first_name = names[0]
+            else:
+                self.first_name = None
 
-        self.first_initial = names[0][0].capitalize()
+            self.first_initial = names[0][0].capitalize()
 
-        self.middle_initials = [middle_name[0] for middle_name in names[1:-1]]
-        self.last_name = names[-1]
+            self.middle_initials = [middle_name[0] for middle_name in names[1:-1]]
+            self.last_name = names[-1]
 
     def __str__(self):
-        name = f'{self.first_initial}.'
+        name = f'{self.first_initial}.' if self.first_initial else ''
 
         if self.middle_initials:
             for middle_initial in self.middle_initials:
