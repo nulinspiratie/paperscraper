@@ -16,6 +16,18 @@ from send_email.email_tools import send_email
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+### Setup the console handler with a StringIO object
+log_capture_string = io.StringIO()
+ch = logging.StreamHandler(log_capture_string)
+ch.setLevel(logging.DEBUG)
+
+### Optionally add a formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+
+### Add the console handler to the logger
+logging.getLogger().addHandler(ch)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Scrape journal papers.')
@@ -42,25 +54,23 @@ if __name__ == '__main__':
 
         total_papers = sum(len(journal.new_papers) for journal in journals)
 
-        email_HTML = create_email_HTML(journals=journals)
+        email_HTML = create_email_HTML(journals=journals, log=log_capture_string.getvalue())
         
         if parsed_args.update:
             for journal in journals:
                 journal.update_database()
             db.session.commit()
     except:
-        print(traceback.format_exc())
-
         db.session.rollback()
         total_papers = 'ERROR'
-        email_HTML = traceback.format_exc()
-
+        logger.error(traceback.format_exc())
+        email_HTML = log_capture_string.getvalue()
 
     if parsed_args.email:
         date_string = datetime.datetime.now().strftime("%d %B %Y")
         send_email(email_address=parsed_args.email,
-                  subject=f'{total_papers} new papers {date_string}',
-                  html=email_HTML)
+                   subject=f'{total_papers} new papers {date_string}',
+                   html=email_HTML)
     else:
         try:
             pyperclip.copy(email_HTML)

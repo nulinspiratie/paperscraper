@@ -61,7 +61,7 @@ def create_HTML_paper_abstracts(papers):
     return HTML
 
 
-def create_email_HTML(journals):
+def create_email_HTML(journals, log=None):
     HTML = ''
     if any(journal.sorted_papers for journal in journals):
         HTML += '<a name="Top"></a>'
@@ -79,4 +79,8 @@ def create_email_HTML(journals):
     if any(journal.sorted_papers for journal in journals):
         HTML += '<H1 style="margin-bottom: 0em">Paper abstracts</H1>'
         HTML += create_HTML_paper_abstracts(highlighted_papers)
+
+    if log is not None:
+        HTML += '<H2 style="margin-bottom: 0em">Log</H2>'
+        HTML += log
     return HTML
