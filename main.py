@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 ### Setup the console handler with a StringIO object
 log_capture_string = io.StringIO()
 ch = logging.StreamHandler(log_capture_string)
-ch.setLevel(logging.DEBUG)
 
 ### Optionally add a formatter
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -37,9 +36,12 @@ if __name__ == '__main__':
     parser.add_argument('--email', type=str, help='Use custom e-mail address')
     parser.add_argument('--update', help='Update journal last updated',
                         action='store_const', const=True)
-    parser.add_argument('--log', help='Add log to e-mail',
-                        action='store_const', const=True)
+    parser.add_argument('--log', type=str, help='Log level to add to e-mail',
+                        default='error')
     parsed_args = parser.parse_args()
+
+    # Set level of log capture
+    ch.setLevel(getattr(logging, parser.log.upper()))
 
     if parsed_args.create_user:
         db.create_all()
@@ -57,8 +59,7 @@ if __name__ == '__main__':
 
         total_papers = sum(len(journal.new_papers) for journal in journals)
 
-        log = log_capture_string.getvalue() if parsed_args.log else None
-        email_HTML = create_email_HTML(journals=journals, log=log)
+        email_HTML = create_email_HTML(journals=journals, log=log_capture_string.getvalue())
         
         if parsed_args.update:
             for journal in journals:
@@ -70,7 +71,6 @@ if __name__ == '__main__':
         logger.error(traceback.format_exc())
         email_HTML = log_capture_string.getvalue()
 
-    print('\n'*10 + log_capture_string.getvalue())
     if parsed_args.email:
         date_string = datetime.datetime.now().strftime("%d %B %Y")
         send_email(email_address=parsed_args.email,

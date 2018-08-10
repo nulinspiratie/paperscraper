@@ -80,7 +80,7 @@ def create_email_HTML(journals, log=None):
         HTML += '<H1 style="margin-bottom: 0em">Paper abstracts</H1>'
         HTML += create_HTML_paper_abstracts(highlighted_papers)
 
-    if log is not None:
-        HTML += '<H2 style="margin-bottom: 0em">Log</H2>'
+    if log:
+        HTML += '<H1 style="margin-bottom: 0em">Log</H1>'
         HTML += log
     return HTML
