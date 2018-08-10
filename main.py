@@ -42,6 +42,7 @@ if __name__ == '__main__':
 
     # Set level of log capture
     ch.setLevel(getattr(logging, parser.log.upper()))
+    logger.info('hi')
 
     if parsed_args.create_user:
         db.create_all()
