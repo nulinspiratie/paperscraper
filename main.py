@@ -37,6 +37,8 @@ if __name__ == '__main__':
     parser.add_argument('--email', type=str, help='Use custom e-mail address')
     parser.add_argument('--update', help='Update journal last updated',
                         action='store_const', const=True)
+    parser.add_argument('--log', help='Add log to e-mail',
+                        action='store_const', const=True)
     parsed_args = parser.parse_args()
 
     if parsed_args.create_user:
@@ -55,7 +57,8 @@ if __name__ == '__main__':
 
         total_papers = sum(len(journal.new_papers) for journal in journals)
 
-        email_HTML = create_email_HTML(journals=journals, log=log_capture_string.getvalue())
+        log = log_capture_string.getvalue() if parsed_args.log else None
+        email_HTML = create_email_HTML(journals=journals, log=log)
         
         if parsed_args.update:
             for journal in journals:
