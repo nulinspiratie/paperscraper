@@ -52,6 +52,7 @@ if __name__ == '__main__':
         print(traceback.format_exc())
 
         db.session.rollback()
+        total_papers = 'ERROR'
         email_HTML = traceback.format_exc()
 
 

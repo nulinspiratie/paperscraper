@@ -16,7 +16,7 @@ class Author:
             author_string = ' '.join(author_string.split(', ')[::-1])
 
         names = author_string.split(' ')
-        assert len(names) > 1
+        assert len(names) > 1, f"Could not extract names from {original_author_string}"
 
         if '.' not in names[0]:
             self.first_name = names[0]
