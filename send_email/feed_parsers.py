@@ -1,6 +1,8 @@
 import feedparser
 import re
 import logging
+from pprint import pformat
+
 from .paper_tools import Paper, Author
 from . import RSS_feed_parsers
 
@@ -25,7 +27,7 @@ def parse_arXiv_feed(url, journal):
                           date=rss_dict['updated_parsed'])
             papers.append(paper)
         except:
-            logger.error(f'Could not parse {journal} entry {entry}')
+            logger.error(f'Could not parse {journal} entry {pformat(entry)}')
     return papers
 RSS_feed_parsers['arXiv quant-ph'] = parse_arXiv_feed
 
@@ -51,7 +53,7 @@ def parse_nature_feed(url, journal):
                           date=date)
             papers.append(paper)
         except:
-            logger.error(f'Could not parse {journal} entry {entry}')
+            logger.error(f'Could not parse {journal} entry {pformat(entry)}')
     return papers
 RSS_feed_parsers['Nature'] = parse_nature_feed
 RSS_feed_parsers['Nature Chemistry'] = parse_nature_feed
@@ -79,7 +81,7 @@ def parse_science_feed(url, journal):
                           date=date)
             papers.append(paper)
         except:
-            logger.error(f'Could not parse {journal} entry {entry}')
+            logger.error(f'Could not parse {journal} entry {pformat(entry)}')
     return papers
 RSS_feed_parsers['Science'] = parse_science_feed
 RSS_feed_parsers['Science Advances'] = parse_science_feed
