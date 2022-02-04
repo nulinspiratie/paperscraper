@@ -39,19 +39,24 @@ if __name__ == '__main__':
     parser.add_argument('--log', type=str, help='Log level to add to e-mail',
                         default='error')
     parsed_args = parser.parse_args()
+    logger.info(f'Sending to email address {parsed_args.email}')
+    logger.info(f'Update "last updated" of journals: {parsed_args.update}')
 
     # Set level of log capture
     ch.setLevel(getattr(logging, parsed_args.log.upper()))
 
     if parsed_args.create_user:
+        logger.info('Creating new user')
         db.create_all()
         quit()
 
     try:
         data = retrieve_data(db)
 
-        journals = [Journal(**journal) for journal in data['journals']
-                    if journal['enabled']]
+        journals = [
+            Journal(**journal) for journal in data['journals']
+            if journal['enabled']
+        ]
 
         for journal in journals:
             journal.get_new_papers(authors=data['authors'],
@@ -65,7 +70,7 @@ if __name__ == '__main__':
             for journal in journals:
                 journal.update_database()
             db.session.commit()
-    except:
+    except Exception:
         db.session.rollback()
         total_papers = 'ERROR'
         logger.error(traceback.format_exc())
@@ -79,6 +84,7 @@ if __name__ == '__main__':
     else:
         try:
             pyperclip.copy(email_HTML)
-        except:
+            logger.info('Saved email HTML into clipboard')
+        except Exception:
             logger.error('Could not copy text')
             print(email_HTML)

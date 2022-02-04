@@ -231,7 +231,7 @@ class Journal():
                                               keywords=keywords)
         logger.debug(f'{self} - Getting new papers '
                      f'({len(self.papers)} papers, {len(self.new_papers)} new, '
-                     f'{len(self.sorted_papers)} filtered)')
+                     f'{len(self.sorted_papers)} highlighted)')
         return self.sorted_papers
 
     def parse_feed(self):
