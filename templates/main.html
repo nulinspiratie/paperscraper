@@ -154,13 +154,15 @@
                 </table>
             </form>
         </div>
-        <div class="column filter_column" style="width: 20%">
+        <div class="column filter_column" style="width: 13%">
             <H2>Available journals</H2>
-            {% for available_journal in available_journals %}
-                <tr>
-                    <td> {{ available_journal }}</td>
-                </tr>
-            {% endfor %}
+            <table>
+                {% for available_journal in available_journals %}
+                    <tr>
+                        <td> {{ available_journal }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
         </div>
     </div>
 </div>
