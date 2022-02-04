@@ -190,7 +190,7 @@ class Paper:
 
 class Journal():
     def __init__(self, name, enabled, summary, last_update=None, **kwargs):
-        assert name in RSS_urls, f"No RSS feed setup for {name}"
+        assert name in RSS_feed_parsers, f"No RSS feed setup for {name}"
 
         self.name = name
         self.enabled = enabled
