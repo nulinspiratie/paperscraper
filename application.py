@@ -109,4 +109,6 @@ if __name__ == '__main__':
     if parsed_args.public:
         parsed_args.ip = '0.0.0.0'
 
+    print(parsed_args)
+
     application.run(host=parsed_args.ip, port=parsed_args.port)
