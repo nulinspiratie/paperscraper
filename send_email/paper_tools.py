@@ -4,7 +4,7 @@ from datetime import datetime
 import logging
 
 from .HTML_tools import title_to_HTML, authors_to_HTML
-from . import RSS_feed_parsers, RSS_urls
+from .jounal_feed_parsers import RSS_feed_parsers
 
 logger = logging.getLogger(__name__)
 
@@ -200,8 +200,7 @@ class Journal():
             last_update = datetime.strptime(last_update, '%Y-%m-%d %H:%M:%S')
         self.last_update = last_update
 
-        self.RSS_url = RSS_urls[self.name]
-        self.feed_parser = RSS_feed_parsers[self.name]
+        self.feed_parser, self.RSS_url = RSS_feed_parsers[self.name]
 
         self.papers = []
         self.new_papers = []
