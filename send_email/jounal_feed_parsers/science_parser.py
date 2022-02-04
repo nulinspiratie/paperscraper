@@ -2,13 +2,14 @@ import feedparser
 import logging
 from pprint import pformat
 
-from ..paper_tools import Paper
 
 
 logger = logging.getLogger(__name__)
 
 
 def parse_science_feed(url, journal):
+    from ..paper_tools import Paper
+
     rss_dict = feedparser.parse(url)
     papers = []
     for entry in rss_dict['entries']:
