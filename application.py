@@ -1,7 +1,7 @@
 # A very simple Flask Hello World app for you to get started with...
 import argparse
 from flask import redirect, render_template, request, url_for
-from send_email import RSS_urls
+from send_email.jounal_feed_parsers import RSS_feed_parsers
 import logging
 from datetime import datetime
 
@@ -77,7 +77,7 @@ def index():
             else:
                 name = request.form["contents"]
                 try:
-                    journal = next(journal for journal in RSS_urls
+                    journal = next(journal for journal in RSS_feed_parsers
                                    if name.lower() == journal.lower())
                     existing_journals = JournalDB.query.filter_by(name=journal).all()
                     if request.form['journal_button'] == 'Add':
@@ -93,7 +93,7 @@ def index():
                             logger.info(f'Removing existing journal: {existing_journal}')
                             db.session.delete(existing_journal)
                 except StopIteration:
-                    logger.warning(f'Could not find journal {name} in {RSS_urls}')
+                    logger.warning(f'Could not find journal {name} in {RSS_feed_parsers}')
 
         db.session.commit()
         return redirect(url_for('index'))
