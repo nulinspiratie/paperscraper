@@ -36,7 +36,7 @@
         }
         table#journal-table {
             width: 100%;
-            padding: 10px,
+            padding: 10px;
             text-align: center;
         }
         table#journal-table td {
@@ -154,12 +154,13 @@
                 </table>
             </form>
         </div>
-        <div class="column filter_column" style="width: 40%">
+        <div class="column filter_column" style="width: 20%">
             <H2>Available journals</H2>
             {% for available_journal in available_journals %}
                 <tr>
                     <td> {{ available_journal }}</td>
                 </tr>
+            {% endfor %}
         </div>
     </div>
 </div>
