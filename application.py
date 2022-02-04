@@ -111,4 +111,4 @@ if __name__ == '__main__':
 
     print(parsed_args)
 
-    application.run(host=parsed_args.ip, port=parsed_args.port)
+    application.run(host=parsed_args.ip, port=parsed_args.port, threaded=True)
