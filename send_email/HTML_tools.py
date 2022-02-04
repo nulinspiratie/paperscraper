@@ -51,7 +51,7 @@ def create_HTML_paper_highlights(papers):
 
 def create_HTML_journal_summary(journal):
     HTML = f'<H2 style="margin-bottom: 0">{journal.name}</H2>'
-    HTML += '<br>'.join([paper.HTML_summary() for paper in journal.papers])
+    HTML += '<br>'.join([paper.HTML_summary() for paper in journal.new_papers])
     return HTML
 
 
@@ -82,5 +82,6 @@ def create_email_HTML(journals, log=None):
 
     if log:
         HTML += '<H1 style="margin-bottom: 0em">Log</H1>'
-        HTML += log
+        HTML += log.replace('\n', '<br>')
+        print(log)
     return HTML

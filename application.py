@@ -106,6 +106,6 @@ if __name__ == '__main__':
     parser.add_argument('--public', action='store_const', const=True)
     parsed_args = parser.parse_args()
     if parsed_args.public:
-        parsed_args.ip = '155.143.13.171'
+        parsed_args.ip = '0.0.0.0'
 
     application.run(host=parsed_args.ip, port=parsed_args.port)

@@ -1,8 +1,12 @@
 import re
 import time
 from datetime import datetime
+import logging
+
 from .HTML_tools import title_to_HTML, authors_to_HTML
 from . import RSS_feed_parsers, RSS_urls
+
+logger = logging.getLogger(__name__)
 
 class Author:
     def __init__(self, author_string):
@@ -204,6 +208,9 @@ class Journal():
         self.filtered_papers = []
         self.sorted_papers = []
 
+    def __str__(self):
+        return f'Journal({self.name})'
+
     def get_new_papers(self, authors, keywords,
                        sort_order=('authors', 'title_keywords', 'abstract_keywords'),
                        filter_last_update=True):
@@ -222,7 +229,9 @@ class Journal():
                                               sort_order=sort_order,
                                               authors=authors,
                                               keywords=keywords)
-
+        logger.debug(f'{self} - Getting new papers '
+                     f'({len(self.papers)} papers, {len(self.new_papers)} new, '
+                     f'{len(self.sorted_papers)} filtered)')
         return self.sorted_papers
 
     def parse_feed(self):
