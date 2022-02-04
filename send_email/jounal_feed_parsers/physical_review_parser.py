@@ -15,12 +15,15 @@ def parse_physical_review_feed(url, journal):
     for entry in rss_dict['entries']:
         try:
             # Extract authors
-            author_entry = entry['author'].replace('\u2009', ' ')
-            if '<em>et al.' in author_entry:
-                author_entry = author_entry.split('</em>')[0]
-                author_entry = author_entry.replace('<em>', ', ')
-            author_strings = author_entry.split(', ')
-            authors = [Author(author_string) for author_string in author_strings]
+            if 'author' in entry:
+                author_entry = entry['author'].replace('\u2009', ' ')
+                if '<em>et al.' in author_entry:
+                    author_entry = author_entry.split('</em>')[0]
+                    author_entry = author_entry.replace('<em>', ', ')
+                author_strings = author_entry.split(', ')
+                authors = [Author(author_string) for author_string in author_strings]
+            else:
+                authors = []
 
             title = entry['title'].split(' (arXiv')[0]
             if '<p>' in entry['summary']:
