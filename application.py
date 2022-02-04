@@ -24,7 +24,8 @@ def index():
         return render_template("main.html",
                                authors=AuthorDB.query.all(),
                                keywords=KeywordDB.query.all(),
-                               journals=JournalDB.query.all())
+                               journals=JournalDB.query.all(),
+                               available_journals=list(RSS_feed_parsers))
     else: # 'POST'
         logger.info(f'Request.form: {request.form}')
 
