@@ -214,7 +214,6 @@ class Journal():
                        sort_order=('authors', 'title_keywords', 'abstract_keywords'),
                        filter_last_update=True):
         self.papers = self.parse_feed()
-        print(filter_last_update, self.last_update)
 
         if filter_last_update and self.last_update is not None:
             self.new_papers = [paper for paper in self.papers
