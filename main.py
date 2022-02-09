@@ -63,7 +63,7 @@ if __name__ == '__main__':
                                    keywords=data['keywords'])
 
         total_papers = sum(len(journal.new_papers) for journal in journals)
-        print({journal.name: len(journal.new_papers for journal in journals})
+        print({journal.name: len(journal.new_papers) for journal in journals})
         email_HTML = create_email_HTML(journals=journals, log=log_capture_string.getvalue())
         
         if parsed_args.update:
