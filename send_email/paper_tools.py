@@ -221,7 +221,7 @@ class Journal():
         else:
             self.new_papers = self.papers
         for paper in self.new_papers:
-            print('\t' + paper.date, self.last_update, paper.date > self.last_update)
+            print('\t', paper.date, self.last_update, paper.date > self.last_update)
 
         self.filtered_papers = self.filter_papers(papers=self.new_papers,
                                                   authors=authors,
