@@ -220,8 +220,6 @@ class Journal():
                                if paper.date > self.last_update]
         else:
             self.new_papers = self.papers
-        for paper in self.new_papers:
-            print('\t', paper.date, self.last_update, paper.date > self.last_update)
 
         self.filtered_papers = self.filter_papers(papers=self.new_papers,
                                                   authors=authors,
@@ -231,7 +229,7 @@ class Journal():
                                               authors=authors,
                                               keywords=keywords)
         logger.debug(f'{self} - Getting new papers '
-                     f'({len(self.papers)} papers, {len(self.new_papers)} new, '
+                     f'({len(self.papers)} papers, {len(self.new_papers)} newer than {self.last_update}, '
                      f'{len(self.sorted_papers)} highlighted)')
         return self.sorted_papers
 
@@ -288,5 +286,6 @@ class Journal():
             from . import JournalDB
             journal_db = JournalDB.query.filter_by(name=self.name).first()
             latest_paper_date = max(paper.date for paper in self.new_papers)
-            print(f'{self.name}: {latest_paper_date}')
+            logger.debug(f'Updating journal {self.name}: {latest_paper_date}')
             journal_db.last_update = latest_paper_date.strftime('%Y-%m-%d %H:%M:%S')
+            logger.debug(f'Updating journal {self.name}: {latest_paper_date} ({journal_db.last_update})')

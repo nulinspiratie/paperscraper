@@ -51,6 +51,7 @@ if __name__ == '__main__':
         quit()
 
     try:
+        logger.info(f'Collecting new papers at {datetime.datetime.now()}')
         data = retrieve_data(db)
 
         journals = [
@@ -63,7 +64,7 @@ if __name__ == '__main__':
                                    keywords=data['keywords'])
 
         total_papers = sum(len(journal.new_papers) for journal in journals)
-        print({journal.name: len(journal.new_papers) for journal in journals})
+        logger.debug('New papers:',{journal.name: len(journal.new_papers) for journal in journals})
         email_HTML = create_email_HTML(journals=journals, log=log_capture_string.getvalue())
         
         if parsed_args.update:
