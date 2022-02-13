@@ -222,7 +222,7 @@ class Journal():
             self.new_papers = self.papers
 
         for paper in self.new_papers:
-            print(f'{paper}, {paper.date} > {paper.last_update}')
+            print(f'{paper}, {paper.date} > {self.last_update}')
 
         self.filtered_papers = self.filter_papers(papers=self.new_papers,
                                                   authors=authors,
