@@ -37,7 +37,7 @@ def parse_physical_review_feed(url, journal):
                           link=entry['link'],
                           journal=journal,
                           pdf_link=entry['link'].replace('/abs/', '/pdf/'),
-                          date=rss_dict['updated_parsed'])
+                          date=entry['updated_parsed'])
             papers.append(paper)
         except Exception as e:
             logger.error(f'Could not parse {journal} entry {pformat(entry)}')
